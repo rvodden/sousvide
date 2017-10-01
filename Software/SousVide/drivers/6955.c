@@ -12,6 +12,9 @@
 
 void 6995_init ( void ) 
 {
+	/* enable twi driver */
+	USI_TWI_Master_Initialise(void);
+
 	/* enable decode mode */
 
 }
