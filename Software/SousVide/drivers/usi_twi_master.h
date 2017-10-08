@@ -31,6 +31,9 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #endif
+
+#include "../board/board.h"
+
 //********** Defines **********//
 // Defines controlling timing limits
 #define TWI_FAST_MODE

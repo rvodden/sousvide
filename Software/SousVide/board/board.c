@@ -5,11 +5,17 @@
  *  Author: Richard
  */ 
 
- #include "usi_twi_master.h"
+#include "../drivers/usi_twi_master.h"
 
- #include "board.h"
+#include "board.h"
+#include "../drivers/MAX69XX.h"
 
- void board_init(void) 
- {
-	USI_TWI_Master_Initialise();
- }
+void board_init(void) 
+{
+	MAX69XX_init();
+}
+
+ISR(INT0_vect)
+{
+
+}

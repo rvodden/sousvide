@@ -34,13 +34,18 @@ LINKER_SCRIPT_DEP:=
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
 ../board \
-../drivers
+../drivers \
+../services
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../board/board.c \
+../drivers/MAX69XX.c \
 ../drivers/usi_twi_master.c \
-../main.c
+../main.c \
+../services/keyboard.c \
+../services/target_temperature.c
 
 
 PREPROCESSING_SRCS += 
@@ -50,20 +55,36 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+board/board.o \
+drivers/MAX69XX.o \
 drivers/usi_twi_master.o \
-main.o
+main.o \
+services/keyboard.o \
+services/target_temperature.o
 
 OBJS_AS_ARGS +=  \
+board/board.o \
+drivers/MAX69XX.o \
 drivers/usi_twi_master.o \
-main.o
+main.o \
+services/keyboard.o \
+services/target_temperature.o
 
 C_DEPS +=  \
+board/board.d \
+drivers/MAX69XX.d \
 drivers/usi_twi_master.d \
-main.d
+main.d \
+services/keyboard.d \
+services/target_temperature.d
 
 C_DEPS_AS_ARGS +=  \
+board/board.d \
+drivers/MAX69XX.d \
 drivers/usi_twi_master.d \
-main.d
+main.d \
+services/keyboard.d \
+services/target_temperature.d
 
 OUTPUT_FILE_PATH +=SousVide.elf
 
@@ -84,6 +105,21 @@ LINKER_SCRIPT_DEP+=
 
 
 
+
+
+
+
+
+
+
+
+board/%.o: ../board/%.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.2.118\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny85 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.2.118\gcc\dev\attiny85" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 drivers/%.o: ../drivers/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
@@ -92,6 +128,13 @@ drivers/%.o: ../drivers/%.c
 	
 
 ./%.o: .././%.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.2.118\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny85 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.2.118\gcc\dev\attiny85" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+services/%.o: ../services/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.2.118\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny85 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.2.118\gcc\dev\attiny85" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

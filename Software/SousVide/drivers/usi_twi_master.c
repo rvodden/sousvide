@@ -30,6 +30,7 @@
 #include <inavr.h>
 #include <ioavr.h>
 #endif
+
 #include "usi_twi_master.h"
 
 unsigned char USI_TWI_Master_Transfer(unsigned char);
@@ -87,8 +88,7 @@ unsigned char USI_TWI_Get_State_Info(void)
 #ifndef __GNUC__
 __x // AVR compiler
 #endif
-    unsigned char
-    USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize)
+unsigned char USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize)
 {
 	unsigned char tempUSISR_8bit = (1 << USISIF) | (1 << USIOIF) | (1 << USIPF) | (1 << USIDC)
 	                               |                 // Prepare register value to: Clear flags, and
@@ -159,7 +159,7 @@ __x // AVR compiler
 
 	/*Write address and Read/Write data */
 	do {
-		/* If masterWrite cycle (or inital address tranmission)*/
+		/* If masterWrite cycle (or initial address transmission)*/
 		if (USI_TWI_state.addressMode || USI_TWI_state.masterWriteDataMode) {
 			/* Write a byte */
 			PORT_USI &= ~(1 << PIN_USI_SCL);         // Pull SCL LOW.
@@ -215,7 +215,7 @@ unsigned char USI_TWI_Master_Transfer(unsigned char temp)
 	       (1 << USITC);                                   // Toggle Clock Port.
 	do {
 		DELAY_T2TWI;
-		USICR = temp; // Generate positve SCL edge.
+		USICR = temp; // Generate positive SCL edge.
 		while (!(PIN_USI & (1 << PIN_USI_SCL)))
 			; // Wait for SCL to go high.
 		DELAY_T4TWI;

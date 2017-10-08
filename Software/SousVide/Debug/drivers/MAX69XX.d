@@ -1,5 +1,6 @@
-drivers/usi_twi_master.d drivers/usi_twi_master.o: \
- ../drivers/usi_twi_master.c \
+drivers/MAX69XX.d drivers/MAX69XX.o: ../drivers/MAX69XX.c \
+ ../drivers/../board/board.h \
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -12,15 +13,17 @@ drivers/usi_twi_master.d drivers/usi_twi_master.o: \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\version.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h \
- ../drivers/usi_twi_master.h \
+ ../drivers/../board/../drivers/MAX69XX.h \
+ ../drivers/../board/../drivers/usi_twi_master.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
- ../drivers/../board/board.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
- ../drivers/../board/../drivers/MAX69XX.h \
- ../drivers/../board/../drivers/usi_twi_master.h \
- ../drivers/../board/../drivers/../board/board.h
+ ../drivers/../board/../drivers/../board/board.h ../drivers/MAX69XX.h \
+ ../drivers/usi_twi_master.h
+
+../drivers/../board/board.h:
+
+c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -46,7 +49,9 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h:
 
-../drivers/usi_twi_master.h:
+../drivers/../board/../drivers/MAX69XX.h:
+
+../drivers/../board/../drivers/usi_twi_master.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h:
 
@@ -54,12 +59,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h:
 
-../drivers/../board/board.h:
-
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
-
-../drivers/../board/../drivers/MAX69XX.h:
-
-../drivers/../board/../drivers/usi_twi_master.h:
-
 ../drivers/../board/../drivers/../board/board.h:
+
+../drivers/MAX69XX.h:
+
+../drivers/usi_twi_master.h:

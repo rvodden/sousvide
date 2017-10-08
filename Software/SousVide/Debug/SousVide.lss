@@ -3,27 +3,31 @@ SousVide.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000046  00000000  00000000  00000054  2**1
+  0 .text         000001ca  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  00800060  0000009a  2**0
+  1 .data         00000000  00800060  00800060  0000023e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .comment      00000030  00000000  00000000  0000009a  2**0
+  2 .bss          00000001  00800060  00800060  0000023e  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  0000023e  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000000cc  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000270  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000020  00000000  00000000  00000108  2**0
+  5 .debug_aranges 000000c8  00000000  00000000  000002ac  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   0000049d  00000000  00000000  00000128  2**0
+  6 .debug_info   00000c00  00000000  00000000  00000374  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000431  00000000  00000000  000005c5  2**0
+  7 .debug_abbrev 00000805  00000000  00000000  00000f74  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000012a  00000000  00000000  000009f6  2**0
+  8 .debug_line   000005b5  00000000  00000000  00001779  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000024  00000000  00000000  00000b20  2**2
+  9 .debug_frame  00000160  00000000  00000000  00001d30  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    0000029d  00000000  00000000  00000b44  2**0
+ 10 .debug_str    000004b2  00000000  00000000  00001e90  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_ranges 00000010  00000000  00000000  00000de1  2**0
+ 11 .debug_loc    00000452  00000000  00000000  00002342  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000088  00000000  00000000  00002794  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -63,26 +67,408 @@ Disassembly of section .text:
   32:	1d 92       	st	X+, r1
 
 00000034 <.do_clear_bss_start>:
-  34:	a0 36       	cpi	r26, 0x60	; 96
+  34:	a1 36       	cpi	r26, 0x61	; 97
   36:	b2 07       	cpc	r27, r18
   38:	e1 f7       	brne	.-8      	; 0x32 <.do_clear_bss_loop>
-  3a:	02 d0       	rcall	.+4      	; 0x40 <main>
-  3c:	02 c0       	rjmp	.+4      	; 0x42 <_exit>
+  3a:	c3 d0       	rcall	.+390    	; 0x1c2 <main>
+  3c:	c4 c0       	rjmp	.+392    	; 0x1c6 <_exit>
 
 0000003e <__bad_interrupt>:
   3e:	e0 cf       	rjmp	.-64     	; 0x0 <__vectors>
 
-00000040 <main>:
+00000040 <board_init>:
+ #include "board.h"
+ #include "../drivers/MAX69XX.h"
 
-#include <avr/io.h>
+ void board_init(void) 
+ {
+	MAX69XX_init();
+  40:	29 d0       	rcall	.+82     	; 0x94 <MAX69XX_init>
+  42:	08 95       	ret
 
+00000044 <MAX69XX_tx>:
+	/* get exiting value of configuration register */
+	config = MAX69XX_rx(MAX69XX_CONFIGURATION);
+	/* set the startup bit */
+	config |= MAX69XX_CONFIG_RESET;
+
+	MAX69XX_tx(MAX69XX_CONFIGURATION, config);
+  44:	cf 93       	push	r28
+  46:	df 93       	push	r29
+  48:	00 d0       	rcall	.+0      	; 0x4a <MAX69XX_tx+0x6>
+  4a:	1f 92       	push	r1
+  4c:	cd b7       	in	r28, 0x3d	; 61
+  4e:	de b7       	in	r29, 0x3e	; 62
+  50:	98 e3       	ldi	r25, 0x38	; 56
+  52:	99 83       	std	Y+1, r25	; 0x01
+  54:	8a 83       	std	Y+2, r24	; 0x02
+  56:	6b 83       	std	Y+3, r22	; 0x03
+  58:	63 e0       	ldi	r22, 0x03	; 3
+  5a:	ce 01       	movw	r24, r28
+  5c:	01 96       	adiw	r24, 0x01	; 1
+  5e:	55 d0       	rcall	.+170    	; 0x10a <USI_TWI_Start_Transceiver_With_Data>
+  60:	0f 90       	pop	r0
+  62:	0f 90       	pop	r0
+  64:	0f 90       	pop	r0
+  66:	df 91       	pop	r29
+  68:	cf 91       	pop	r28
+  6a:	08 95       	ret
+
+0000006c <MAX69XX_rx>:
+  6c:	cf 93       	push	r28
+  6e:	df 93       	push	r29
+  70:	00 d0       	rcall	.+0      	; 0x72 <MAX69XX_rx+0x6>
+  72:	1f 92       	push	r1
+  74:	cd b7       	in	r28, 0x3d	; 61
+  76:	de b7       	in	r29, 0x3e	; 62
+  78:	91 e0       	ldi	r25, 0x01	; 1
+  7a:	99 83       	std	Y+1, r25	; 0x01
+  7c:	8a 83       	std	Y+2, r24	; 0x02
+  7e:	63 e0       	ldi	r22, 0x03	; 3
+  80:	ce 01       	movw	r24, r28
+  82:	01 96       	adiw	r24, 0x01	; 1
+  84:	42 d0       	rcall	.+132    	; 0x10a <USI_TWI_Start_Transceiver_With_Data>
+  86:	8b 81       	ldd	r24, Y+3	; 0x03
+  88:	0f 90       	pop	r0
+  8a:	0f 90       	pop	r0
+  8c:	0f 90       	pop	r0
+  8e:	df 91       	pop	r29
+  90:	cf 91       	pop	r28
+  92:	08 95       	ret
+
+00000094 <MAX69XX_init>:
+#include "MAX69XX.h"
+
+inline void MAX69XX_init ( void ) 
+{
+	/* enable twi driver */
+	USI_TWI_Master_Initialise();
+  94:	0a d0       	rcall	.+20     	; 0xaa <USI_TWI_Master_Initialise>
+inline void MAX69XX_startup( void )
+{
+	char config;
+
+	/* get exiting value of configuration register */
+	config = MAX69XX_rx(MAX69XX_CONFIGURATION);
+  96:	84 e0       	ldi	r24, 0x04	; 4
+  98:	e9 df       	rcall	.-46     	; 0x6c <MAX69XX_rx>
+	/* set the startup bit */
+	config |= MAX69XX_CONFIG_RESET;
+
+	MAX69XX_tx(MAX69XX_CONFIGURATION, config);
+  9a:	68 2f       	mov	r22, r24
+  9c:	60 62       	ori	r22, 0x20	; 32
+  9e:	84 e0       	ldi	r24, 0x04	; 4
+  a0:	d1 df       	rcall	.-94     	; 0x44 <MAX69XX_tx>
+	MAX69XX_tx(MAX69XX_DECODE_MODE,0x0000);
+}
+
+inline void MAX69XX_set_scan_limit(unsigned char limit)
+{
+	MAX69XX_tx(MAX69XX_SCAN_LIMIT, limit);
+  a2:	63 e0       	ldi	r22, 0x03	; 3
+  a4:	83 e0       	ldi	r24, 0x03	; 3
+  a6:	ce df       	rcall	.-100    	; 0x44 <MAX69XX_tx>
+  a8:	08 95       	ret
+
+000000aa <USI_TWI_Master_Initialise>:
+Use this function to get hold of the error message from the last transmission
+---------------------------------------------------------------*/
+unsigned char USI_TWI_Get_State_Info(void)
+{
+	return (USI_TWI_state.errorState); // Return error state.
+}
+  aa:	c0 9a       	sbi	0x18, 0	; 24
+  ac:	c2 9a       	sbi	0x18, 2	; 24
+  ae:	ba 9a       	sbi	0x17, 2	; 23
+  b0:	b8 9a       	sbi	0x17, 0	; 23
+  b2:	8f ef       	ldi	r24, 0xFF	; 255
+  b4:	8f b9       	out	0x0f, r24	; 15
+  b6:	8a e2       	ldi	r24, 0x2A	; 42
+  b8:	8d b9       	out	0x0d, r24	; 13
+  ba:	80 ef       	ldi	r24, 0xF0	; 240
+  bc:	8e b9       	out	0x0e, r24	; 14
+  be:	08 95       	ret
+
+000000c0 <USI_TWI_Master_Transfer>:
+ Data to be sent has to be placed into the USIDR prior to calling
+ this function. Data read, will be return'ed from the function.
+---------------------------------------------------------------*/
+unsigned char USI_TWI_Master_Transfer(unsigned char temp)
+{
+	USISR = temp;                                          // Set USISR according to temp.
+  c0:	8e b9       	out	0x0e, r24	; 14
+	       (1 << USIWM1) | (0 << USIWM0) |                 // Set USI in Two-wire mode.
+	       (1 << USICS1) | (0 << USICS0) | (1 << USICLK) | // Software clock strobe as source.
+	       (1 << USITC);                                   // Toggle Clock Port.
+	do {
+		DELAY_T2TWI;
+		USICR = temp; // Generate positive SCL edge.
+  c2:	8b e2       	ldi	r24, 0x2B	; 43
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  c4:	97 e0       	ldi	r25, 0x07	; 7
+  c6:	9a 95       	dec	r25
+  c8:	f1 f7       	brne	.-4      	; 0xc6 <USI_TWI_Master_Transfer+0x6>
+  ca:	8d b9       	out	0x0d, r24	; 13
+		while (!(PIN_USI & (1 << PIN_USI_SCL)))
+  cc:	b2 9b       	sbis	0x16, 2	; 22
+  ce:	fe cf       	rjmp	.-4      	; 0xcc <USI_TWI_Master_Transfer+0xc>
+  d0:	93 e0       	ldi	r25, 0x03	; 3
+  d2:	9a 95       	dec	r25
+  d4:	f1 f7       	brne	.-4      	; 0xd2 <USI_TWI_Master_Transfer+0x12>
+  d6:	00 00       	nop
+			; // Wait for SCL to go high.
+		DELAY_T4TWI;
+		USICR = temp;                   // Generate negative SCL edge.
+  d8:	8d b9       	out	0x0d, r24	; 13
+	} while (!(USISR & (1 << USIOIF))); // Check for transfer complete.
+  da:	76 9b       	sbis	0x0e, 6	; 14
+  dc:	f3 cf       	rjmp	.-26     	; 0xc4 <USI_TWI_Master_Transfer+0x4>
+  de:	87 e0       	ldi	r24, 0x07	; 7
+  e0:	8a 95       	dec	r24
+  e2:	f1 f7       	brne	.-4      	; 0xe0 <USI_TWI_Master_Transfer+0x20>
+
+	DELAY_T2TWI;
+	temp  = USIDR;                 // Read out data.
+  e4:	8f b1       	in	r24, 0x0f	; 15
+	USIDR = 0xFF;                  // Release SDA.
+  e6:	9f ef       	ldi	r25, 0xFF	; 255
+  e8:	9f b9       	out	0x0f, r25	; 15
+	DDR_USI |= (1 << PIN_USI_SDA); // Enable SDA as output.
+  ea:	b8 9a       	sbi	0x17, 0	; 23
+
+	return temp; // Return the data from the USIDR
+}
+  ec:	08 95       	ret
+
+000000ee <USI_TWI_Master_Stop>:
+ Function for generating a TWI Stop Condition. Used to release
+ the TWI bus.
+---------------------------------------------------------------*/
+unsigned char USI_TWI_Master_Stop(void)
+{
+	PORT_USI &= ~(1 << PIN_USI_SDA); // Pull SDA low.
+  ee:	c0 98       	cbi	0x18, 0	; 24
+	PORT_USI |= (1 << PIN_USI_SCL);  // Release SCL.
+  f0:	c2 9a       	sbi	0x18, 2	; 24
+	while (!(PIN_USI & (1 << PIN_USI_SCL)))
+  f2:	b2 9b       	sbis	0x16, 2	; 22
+  f4:	fe cf       	rjmp	.-4      	; 0xf2 <USI_TWI_Master_Stop+0x4>
+  f6:	83 e0       	ldi	r24, 0x03	; 3
+  f8:	8a 95       	dec	r24
+  fa:	f1 f7       	brne	.-4      	; 0xf8 <USI_TWI_Master_Stop+0xa>
+  fc:	00 00       	nop
+		; // Wait for SCL to go high.
+	DELAY_T4TWI;
+	PORT_USI |= (1 << PIN_USI_SDA); // Release SDA.
+  fe:	c0 9a       	sbi	0x18, 0	; 24
+ 100:	87 e0       	ldi	r24, 0x07	; 7
+ 102:	8a 95       	dec	r24
+ 104:	f1 f7       	brne	.-4      	; 0x102 <USI_TWI_Master_Stop+0x14>
+		return (FALSE);
+	}
+#endif
+
+	return (TRUE);
+}
+ 106:	81 e0       	ldi	r24, 0x01	; 1
+ 108:	08 95       	ret
+
+0000010a <USI_TWI_Start_Transceiver_With_Data>:
+---------------------------------------------------------------*/
+#ifndef __GNUC__
+__x // AVR compiler
+#endif
+unsigned char USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize)
+{
+ 10a:	0f 93       	push	r16
+ 10c:	1f 93       	push	r17
+ 10e:	cf 93       	push	r28
+ 110:	df 93       	push	r29
+ 112:	c6 2f       	mov	r28, r22
+	unsigned char tempUSISR_1bit = (1 << USISIF) | (1 << USIOIF) | (1 << USIPF) | (1 << USIDC)
+	                               |                 // Prepare register value to: Clear flags, and
+	                               (0xE << USICNT0); // set USI to shift 1 bit i.e. count 2 clock edges.
+
+	USI_TWI_state.errorState  = 0;
+	USI_TWI_state.addressMode = TRUE;
+ 114:	21 e0       	ldi	r18, 0x01	; 1
+ 116:	20 93 60 00 	sts	0x0060, r18	; 0x800060 <_edata>
+		USI_TWI_state.errorState = USI_TWI_UE_DATA_COL;
+		return (FALSE);
+	}
+#endif
+
+	if (!(*msg
+ 11a:	fc 01       	movw	r30, r24
+ 11c:	20 81       	ld	r18, Z
+ 11e:	20 fd       	sbrc	r18, 0
+ 120:	04 c0       	rjmp	.+8      	; 0x12a <USI_TWI_Start_Transceiver_With_Data+0x20>
+	      & (1 << TWI_READ_BIT))) // The LSB in the address byte determines if is a masterRead or masterWrite operation.
+	{
+		USI_TWI_state.masterWriteDataMode = TRUE;
+ 122:	21 e0       	ldi	r18, 0x01	; 1
+ 124:	22 60       	ori	r18, 0x02	; 2
+ 126:	20 93 60 00 	sts	0x0060, r18	; 0x800060 <_edata>
+	}
+
+	/* Release SCL to ensure that (repeated) Start can be performed */
+	PORT_USI |= (1 << PIN_USI_SCL); // Release SCL.
+ 12a:	c2 9a       	sbi	0x18, 2	; 24
+	while (!(PIN_USI & (1 << PIN_USI_SCL)))
+ 12c:	b2 9b       	sbis	0x16, 2	; 22
+ 12e:	fe cf       	rjmp	.-4      	; 0x12c <USI_TWI_Start_Transceiver_With_Data+0x22>
+ 130:	f3 e0       	ldi	r31, 0x03	; 3
+ 132:	fa 95       	dec	r31
+ 134:	f1 f7       	brne	.-4      	; 0x132 <USI_TWI_Start_Transceiver_With_Data+0x28>
+ 136:	00 00       	nop
+#else
+	DELAY_T2TWI; // Delay for T2TWI if TWI_STANDARD_MODE
+#endif
+
+	/* Generate Start Condition */
+	PORT_USI &= ~(1 << PIN_USI_SDA); // Force SDA LOW.
+ 138:	c0 98       	cbi	0x18, 0	; 24
+ 13a:	23 e0       	ldi	r18, 0x03	; 3
+ 13c:	2a 95       	dec	r18
+ 13e:	f1 f7       	brne	.-4      	; 0x13c <USI_TWI_Start_Transceiver_With_Data+0x32>
+ 140:	00 00       	nop
+	DELAY_T4TWI;
+	PORT_USI &= ~(1 << PIN_USI_SCL); // Pull SCL LOW.
+ 142:	c2 98       	cbi	0x18, 2	; 24
+	PORT_USI |= (1 << PIN_USI_SDA);  // Release SDA.
+ 144:	c0 9a       	sbi	0x18, 0	; 24
+ 146:	8c 01       	movw	r16, r24
+			*(msg++) = USI_TWI_Master_Transfer(tempUSISR_8bit);
+
+			/* Prepare to generate ACK (or NACK in case of End Of Transmission) */
+			if (msgSize == 1) // If transmission of last byte was performed.
+			{
+				USIDR = 0xFF; // Load NACK to confirm End Of Transmission.
+ 148:	df ef       	ldi	r29, 0xFF	; 255
+#endif
+
+	/*Write address and Read/Write data */
+	do {
+		/* If masterWrite cycle (or initial address transmission)*/
+		if (USI_TWI_state.addressMode || USI_TWI_state.masterWriteDataMode) {
+ 14a:	90 91 60 00 	lds	r25, 0x0060	; 0x800060 <_edata>
+ 14e:	93 70       	andi	r25, 0x03	; 3
+ 150:	01 f1       	breq	.+64     	; 0x192 <USI_TWI_Start_Transceiver_With_Data+0x88>
+			/* Write a byte */
+			PORT_USI &= ~(1 << PIN_USI_SCL);         // Pull SCL LOW.
+ 152:	c2 98       	cbi	0x18, 2	; 24
+			USIDR = *(msg++);                        // Setup data.
+ 154:	f8 01       	movw	r30, r16
+ 156:	80 81       	ld	r24, Z
+ 158:	8f b9       	out	0x0f, r24	; 15
+			USI_TWI_Master_Transfer(tempUSISR_8bit); // Send 8 bits on bus.
+ 15a:	80 ef       	ldi	r24, 0xF0	; 240
+ 15c:	b1 df       	rcall	.-158    	; 0xc0 <USI_TWI_Master_Transfer>
+
+			/* Clock and verify (N)ACK from slave */
+			DDR_USI &= ~(1 << PIN_USI_SDA); // Enable SDA as input.
+ 15e:	b8 98       	cbi	0x17, 0	; 23
+			if (USI_TWI_Master_Transfer(tempUSISR_1bit) & (1 << TWI_NACK_BIT)) {
+ 160:	8e ef       	ldi	r24, 0xFE	; 254
+ 162:	ae df       	rcall	.-164    	; 0xc0 <USI_TWI_Master_Transfer>
+ 164:	80 ff       	sbrs	r24, 0
+ 166:	0f c0       	rjmp	.+30     	; 0x186 <USI_TWI_Start_Transceiver_With_Data+0x7c>
+				if (USI_TWI_state.addressMode)
+ 168:	90 91 60 00 	lds	r25, 0x0060	; 0x800060 <_edata>
+ 16c:	89 2f       	mov	r24, r25
+ 16e:	81 70       	andi	r24, 0x01	; 1
+ 170:	90 ff       	sbrs	r25, 0
+ 172:	05 c0       	rjmp	.+10     	; 0x17e <USI_TWI_Start_Transceiver_With_Data+0x74>
+					USI_TWI_state.errorState = USI_TWI_NO_ACK_ON_ADDRESS;
+ 174:	86 e0       	ldi	r24, 0x06	; 6
+ 176:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <_edata>
+				else
+					USI_TWI_state.errorState = USI_TWI_NO_ACK_ON_DATA;
+				return (FALSE);
+ 17a:	80 e0       	ldi	r24, 0x00	; 0
+ 17c:	1d c0       	rjmp	.+58     	; 0x1b8 <USI_TWI_Start_Transceiver_With_Data+0xae>
+			DDR_USI &= ~(1 << PIN_USI_SDA); // Enable SDA as input.
+			if (USI_TWI_Master_Transfer(tempUSISR_1bit) & (1 << TWI_NACK_BIT)) {
+				if (USI_TWI_state.addressMode)
+					USI_TWI_state.errorState = USI_TWI_NO_ACK_ON_ADDRESS;
+				else
+					USI_TWI_state.errorState = USI_TWI_NO_ACK_ON_DATA;
+ 17e:	95 e0       	ldi	r25, 0x05	; 5
+ 180:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <_edata>
+ 184:	19 c0       	rjmp	.+50     	; 0x1b8 <USI_TWI_Start_Transceiver_With_Data+0xae>
+				return (FALSE);
+			}
+			USI_TWI_state.addressMode = FALSE; // Only perform address transmission once.
+ 186:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <_edata>
+ 18a:	8e 7f       	andi	r24, 0xFE	; 254
+ 18c:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <_edata>
+ 190:	0c c0       	rjmp	.+24     	; 0x1aa <USI_TWI_Start_Transceiver_With_Data+0xa0>
+		}
+		/* Else masterRead cycle*/
+		else {
+			/* Read a data byte */
+			DDR_USI &= ~(1 << PIN_USI_SDA); // Enable SDA as input.
+ 192:	b8 98       	cbi	0x17, 0	; 23
+			*(msg++) = USI_TWI_Master_Transfer(tempUSISR_8bit);
+ 194:	80 ef       	ldi	r24, 0xF0	; 240
+ 196:	94 df       	rcall	.-216    	; 0xc0 <USI_TWI_Master_Transfer>
+ 198:	f8 01       	movw	r30, r16
+ 19a:	80 83       	st	Z, r24
+
+			/* Prepare to generate ACK (or NACK in case of End Of Transmission) */
+			if (msgSize == 1) // If transmission of last byte was performed.
+ 19c:	c1 30       	cpi	r28, 0x01	; 1
+ 19e:	11 f4       	brne	.+4      	; 0x1a4 <USI_TWI_Start_Transceiver_With_Data+0x9a>
+			{
+				USIDR = 0xFF; // Load NACK to confirm End Of Transmission.
+ 1a0:	df b9       	out	0x0f, r29	; 15
+ 1a2:	01 c0       	rjmp	.+2      	; 0x1a6 <USI_TWI_Start_Transceiver_With_Data+0x9c>
+			} else {
+				USIDR = 0x00; // Load ACK. Set data register bit 7 (output for SDA) low.
+ 1a4:	1f b8       	out	0x0f, r1	; 15
+			}
+			USI_TWI_Master_Transfer(tempUSISR_1bit); // Generate ACK/NACK.
+ 1a6:	8e ef       	ldi	r24, 0xFE	; 254
+ 1a8:	8b df       	rcall	.-234    	; 0xc0 <USI_TWI_Master_Transfer>
+		}
+	} while (--msgSize); // Until all data sent/received.
+ 1aa:	c1 50       	subi	r28, 0x01	; 1
+ 1ac:	0f 5f       	subi	r16, 0xFF	; 255
+ 1ae:	1f 4f       	sbci	r17, 0xFF	; 255
+ 1b0:	c1 11       	cpse	r28, r1
+ 1b2:	cb cf       	rjmp	.-106    	; 0x14a <USI_TWI_Start_Transceiver_With_Data+0x40>
+
+	USI_TWI_Master_Stop(); // Send a STOP condition on the TWI bus.
+ 1b4:	9c df       	rcall	.-200    	; 0xee <USI_TWI_Master_Stop>
+
+	/* Transmission successfully completed*/
+	return (TRUE);
+ 1b6:	81 e0       	ldi	r24, 0x01	; 1
+}
+ 1b8:	df 91       	pop	r29
+ 1ba:	cf 91       	pop	r28
+ 1bc:	1f 91       	pop	r17
+ 1be:	0f 91       	pop	r16
+ 1c0:	08 95       	ret
+
+000001c2 <main>:
+
+#include "board/board.h"
 
 int main(void)
 {
-  40:	ff cf       	rjmp	.-2      	; 0x40 <main>
+	board_init();
+ 1c2:	3e df       	rcall	.-388    	; 0x40 <board_init>
+ 1c4:	ff cf       	rjmp	.-2      	; 0x1c4 <main+0x2>
 
-00000042 <_exit>:
-  42:	f8 94       	cli
+000001c6 <_exit>:
+ 1c6:	f8 94       	cli
 
-00000044 <__stop_program>:
-  44:	ff cf       	rjmp	.-2      	; 0x44 <__stop_program>
+000001c8 <__stop_program>:
+ 1c8:	ff cf       	rjmp	.-2      	; 0x1c8 <__stop_program>

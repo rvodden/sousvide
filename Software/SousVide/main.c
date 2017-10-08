@@ -6,8 +6,9 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
-#include "board.h"
+#include "board/board.h"
 
 int main(void)
 {
@@ -18,5 +19,9 @@ int main(void)
     {
 		;
     }
+}
+
+ISR(KEYPRESS_INTERRUPT) {
+	// kbr_keypressed();
 }
 
